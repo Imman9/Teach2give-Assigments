@@ -1,0 +1,205 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Arial", sans-serif;
+}
+
+body {
+  background-color: #f8f9fb;
+  padding: 20px;
+}
+
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #e0e0e0;
+  padding: 15px 30px;
+}
+
+.logo img {
+  width: 50px;
+}
+
+.nav-links {
+  list-style: none;
+  display: flex;
+  gap: 20px;
+}
+
+.nav-links li {
+  display: inline;
+}
+
+.nav-links li a {
+  text-decoration: none;
+  color: black;
+  font-weight: bold;
+}
+
+.user-actions {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.user-actions a {
+  text-decoration: none;
+  color: black;
+}
+
+.profile-pic {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+}
+
+.container {
+  display: flex;
+  gap: 20px;
+  margin-top: 20px;
+}
+
+.account-section {
+  background: rgb(238, 250, 250);
+  padding: 20px;
+  flex: 1;
+  border-radius: 8px;
+  box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.account-section h3 {
+  color: gray;
+}
+
+.account-section span {
+  color: green;
+}
+
+.input-box {
+  display: flex;
+  align-items: center;
+  background: #eef2f7;
+  padding: 8px;
+  border-radius: 5px;
+  margin: 10px 0;
+}
+
+.input-box input {
+  border: none;
+  background: none;
+  width: 100%;
+  padding: 5px;
+}
+
+.input-box .checkmark {
+  color: green;
+  font-weight: bold;
+}
+
+.register {
+  color: gray;
+  font-size: 14px;
+  margin: 10px 0;
+}
+
+.button-group {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+
+.btn {
+  padding: 10px 15px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.cancel {
+  background: #ccc;
+  color: black;
+}
+
+.login {
+  background: #007bff;
+  color: white;
+}
+
+.shipping {
+  background: #007bff;
+  color: white;
+}
+
+.order-summary {
+  background: rgb(238, 250, 250);
+  padding: 20px;
+  flex: 1;
+  border-radius: 8px;
+  box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.order-summary img {
+  height: 100px;
+  width: 100%;
+  display: block;
+  margin: 10px auto;
+}
+
+.product {
+  display: flex;
+  justify-content: space-between;
+  margin: 10px 0;
+}
+
+.price {
+  font-weight: bold;
+}
+
+.quantity {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 10px 0;
+}
+
+.quantity button {
+  background: #eef2f7;
+  border: none;
+  padding: 5px 10px;
+  cursor: pointer;
+}
+
+.discount {
+  margin: 20px 0;
+}
+
+.discount input {
+  width: 70%;
+  padding: 8px;
+  margin-right: 5px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.apply {
+  background: #007bff;
+  color: white;
+}
+
+.summary div {
+  display: flex;
+  justify-content: space-between;
+  padding: 5px 0;
+  border-bottom: 1px solid #ddd;
+}
+
+.summary .free {
+  color: green;
+}
+
+.summary .total {
+  font-weight: bold;
+}
