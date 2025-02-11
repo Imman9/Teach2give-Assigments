@@ -1,0 +1,20 @@
+{
+  "name": "booleans",
+  "version": "1.0.0",
+  "main": "booleans.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon objects.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "bcrypt": "^5.1.1",
+    "json-server": "^1.0.0-beta.3",
+    "nodemon": "^3.1.9",
+    "speakeasy": "^2.0.0"
+  },
+  "type": "module"
+}
