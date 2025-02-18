@@ -97,9 +97,9 @@ const users = [
 ];
 
 const analyzeSocialMediaData = (users) => {
-  const fixedDate = new Date("2024-05-17"); // Simulate today's date
+  const fixedDate = new Date("2024-05-17");
   const oneWeekAgo = new Date(fixedDate);
-  oneWeekAgo.setDate(oneWeekAgo.getDate() - 7); // 7 days before
+  oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
 
   const processedData = users
     .map((user) => ({
@@ -134,5 +134,4 @@ const analyzeSocialMediaData = (users) => {
   };
 };
 
-// Example Usage
 console.log(analyzeSocialMediaData(users));
