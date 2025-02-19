@@ -1,0 +1,28 @@
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Books App</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="container" id="container">
+      <h1>Books Library</h1>
+      <div class="filters">
+        <select id="genreFilter">
+          <option value="">Select Genre</option>
+          <option value="Dystopian">Dystopian</option>
+          <option value="Fiction">Fiction</option>
+          <option value="Fantasy">Fantasy</option>
+        </select>
+        <button onclick="sortBooksBy('year', 'asc')">Sort by Year (Asc)</button>
+        <button onclick="sortBooksBy('year', 'desc')">
+          Sort by Year (Desc)
+        </button>
+      </div>
+      <div id="booksContainer" class="book-list"></div>
+      <p id="errorMsg" class="error" style="display: none">No books found.</p>
+    </div>
+    <script src="index.js"></script>
+  </body>
+</html>
