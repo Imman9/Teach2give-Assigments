@@ -19,8 +19,6 @@ async function displayAllBooks(data) {
     return;
   }
 
-  document.getElementById("errorMsg");
-
   data.map((book) => {
     const card = document.createElement("div");
     card.classList.add("book");
@@ -35,16 +33,12 @@ async function displayAllBooks(data) {
     `;
     booksContainer.appendChild(card);
 
-    const buyBtn = card.querySelector(".shop-now")
-buyBtn.addEventListener('click', () => {
-  addToCart(book.title, book.image)
-})
-
-
-
+    const buyBtn = card.querySelector(".shop-now");
+    buyBtn.addEventListener("click", () => {
+      addToCart(book.title, book.image);
+    });
   });
 }
-
 
 async function filteredBooks(genre) {
   const data = await fetchData();
@@ -85,16 +79,15 @@ const cartToggle = document.getElementById("toggleCartBtn");
 
 cartToggle.addEventListener("click", function () {
   if (cartCard.style.display === "block") {
-    cartCard.style.display = "none"; // Hide cart
+    cartCard.style.display = "none"; 
   } else {
-    cartCard.style.display = "block"; // Show cart
+    cartCard.style.display = "block"; 
   }
 });
 
-const cart = new Array();
+let cart = new Array();
 const cartContainer = document.querySelector(".cart-items");
 const countElement = document.getElementById("count");
-
 
 function addToCart(title, image) {
   const existingItem = cart.find((item) => item.title === title);
@@ -106,18 +99,11 @@ function addToCart(title, image) {
   updateCart();
 }
 
-
 function removeFromCart(title) {
-  const index = cart.findIndex((item) => item.title === title);
-  if (index !== -1) {
-    if (cart[index].quantity > 1) {
-      cart[index].quantity--;
-    } else {
-      cart.splice(index, 1);
-    }
-  }
+  cart = cart.filter((item) => item.title !== title); // Remove item completely
   updateCart();
 }
+
 
 function changeQuantity(title, change) {
   const item = cart.find((item) => item.title === title);
@@ -130,7 +116,6 @@ function changeQuantity(title, change) {
   }
   updateCart();
 }
-
 
 function updateCart() {
   cartContainer.innerHTML = "";
