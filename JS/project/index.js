@@ -3,7 +3,7 @@ const api = "http://localhost:3000/Books";
 async function fetchData() {
   try {
     const res = await fetch(api);
-    if (!res.ok) throw new Error("Network response was not ok");
+    if (!res.ok) throw new Error("Error in API url");
     return await res.json();
   } catch (err) {
     console.error("Error fetching data: ", err);
@@ -14,14 +14,13 @@ async function displayAllBooks(data) {
   const booksContainer = document.getElementById("booksContainer");
   booksContainer.innerHTML = "";
 
-  if (!data || data.length === 0) {
+  if (!data) {
     document.getElementById("errorMsg").style.display = "block";
     return;
   }
 
-  document.getElementById("errorMsg").style.display = "none";
 
-  data.forEach((book) => {
+  data.map((book) => {
     const card = document.createElement("div");
     card.classList.add("book");
     card.innerHTML = `
@@ -44,17 +43,17 @@ async function filteredBooks(genre) {
   displayAllBooks(filteredData);
 }
 
-async function sortBooksBy(property, order = "asc") {
+async function sortBooksBy(prop, order = "asc") {
   const data = await fetchData();
   if (!data) return;
 
   data.sort((a, b) =>
-    order === "asc" ? a[property] - b[property] : b[property] - a[property]
+    order === "asc" ? a[prop] - b[prop] : b[prop] - a[prop]
   );
   displayAllBooks(data);
 }
 
-async function initial() {
+async function initializer() {
   const data = await fetchData();
   displayAllBooks(data);
   const genreFilter = document.getElementById("genreFilter");
@@ -68,4 +67,4 @@ async function initial() {
   });
 }
 
-initial();
+initializer();
