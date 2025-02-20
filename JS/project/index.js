@@ -29,13 +29,13 @@ async function displayAllBooks(data) {
         <p><strong>Genre:</strong> ${book.genre}</p>
         <p><strong>Year:</strong> ${book.year}</p>
         <p><strong>Pages:</strong> ${book.pages}</p>
-        <button class="shop-now" id="shop-now">Buy Now</button>
+        <button class="shop-now" id="shop-now">Buy Now <h2><strong>$${book.cost}</strong></h2></button>
     `;
     booksContainer.appendChild(card);
 
     const buyBtn = card.querySelector(".shop-now");
     buyBtn.addEventListener("click", () => {
-      addToCart(book.title, book.image);
+      addToCart(book.title, book.image, book.cost);
     });
   });
 }
@@ -89,12 +89,12 @@ let cart = new Array();
 const cartContainer = document.querySelector(".cart-items");
 const countElement = document.getElementById("count");
 
-function addToCart(title, image) {
+function addToCart(title, image, cost) {
   const existingItem = cart.find((item) => item.title === title);
   if (existingItem) {
     existingItem.quantity++;
   } else {
-    cart.push({ title, image, quantity: 1 });
+    cart.push({ title, image, cost, quantity: 1 });
   }
   updateCart();
 }
@@ -117,11 +117,17 @@ function changeQuantity(title, change) {
   updateCart();
 }
 
+
 function updateCart() {
   cartContainer.innerHTML = "";
   countElement.innerText = cart.length;
 
+  let totalCartCost = 0;
+
   cart.forEach((item) => {
+    const itemTotalCost = item.cost * item.quantity; // Calculate total cost per item
+    totalCartCost += itemTotalCost; // Accumulate total cart cost
+
     const cartItem = document.createElement("div");
     cartItem.classList.add("cart-item");
 
@@ -129,14 +135,23 @@ function updateCart() {
         <img src="${item.image}" alt="${item.title}">
         <div class="cart-details">
             <h4>${item.title}</h4>
+            <p>Price: $${item.cost.toFixed(2)}</p>
             <div class="quantity-control">
                 <button class="qty-btn decrease" onclick="changeQuantity('${item.title}', -1)">-</button>
                 <span>${item.quantity}</span>
                 <button class="qty-btn increase" onclick="changeQuantity('${item.title}', 1)">+</button>
             </div>
+            <p><strong>Total: $${itemTotalCost.toFixed(2)}</strong></p>
         </div>
         <button class="remove-btn" onclick="removeFromCart('${item.title}')">Remove</button>
+        <hr>
     `;
     cartContainer.appendChild(cartItem);
   });
+
+  // Display overall cart total
+  const totalCostElement = document.createElement("div");
+  totalCostElement.classList.add("cart-total");
+  totalCostElement.innerHTML = `<h3>Total Cost: $${totalCartCost.toFixed(2)}</h3>`;
+  cartContainer.appendChild(totalCostElement);
 }
