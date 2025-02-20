@@ -100,7 +100,7 @@ function addToCart(title, image, cost) {
 }
 
 function removeFromCart(title) {
-  cart = cart.filter((item) => item.title !== title); // Remove item completely
+  cart = cart.filter((item) => item.title !== title); 
   updateCart();
 }
 
@@ -125,8 +125,8 @@ function updateCart() {
   let totalCartCost = 0;
 
   cart.forEach((item) => {
-    const itemTotalCost = item.cost * item.quantity; // Calculate total cost per item
-    totalCartCost += itemTotalCost; // Accumulate total cart cost
+    const itemTotalCost = item.cost * item.quantity; 
+    totalCartCost += itemTotalCost; 
 
     const cartItem = document.createElement("div");
     cartItem.classList.add("cart-item");
