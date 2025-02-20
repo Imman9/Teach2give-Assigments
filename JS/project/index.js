@@ -1,4 +1,4 @@
-const api = "http://localhost:3000/books";
+const api = "http://localhost:3000/Books";
 
 async function fetchData() {
   try {
