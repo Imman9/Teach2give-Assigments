@@ -19,8 +19,6 @@ async function displayAllBooks(data) {
     return;
   }
 
-  document.getElementById("errorMsg");
-
   data.map((book) => {
     const card = document.createElement("div");
     card.classList.add("book");
@@ -34,6 +32,11 @@ async function displayAllBooks(data) {
         <button class="shop-now" id="shop-now">Buy Now</button>
     `;
     booksContainer.appendChild(card);
+
+    const buyBtn = card.querySelector(".shop-now");
+    buyBtn.addEventListener("click", () => {
+      addToCart(book.title, book.image);
+    });
   });
 }
 
@@ -76,15 +79,16 @@ const cartToggle = document.getElementById("toggleCartBtn");
 
 cartToggle.addEventListener("click", function () {
   if (cartCard.style.display === "block") {
-    cartCard.style.display = "none"; // Hide cart
+    cartCard.style.display = "none"; 
   } else {
-    cartCard.style.display = "block"; // Show cart
+    cartCard.style.display = "block"; 
   }
 });
 
-const cart = new Array();
+let cart = new Array();
 const cartContainer = document.querySelector(".cart-items");
 const countElement = document.getElementById("count");
+
 function addToCart(title, image) {
   const existingItem = cart.find((item) => item.title === title);
   if (existingItem) {
@@ -94,15 +98,45 @@ function addToCart(title, image) {
   }
   updateCart();
 }
+
+function removeFromCart(title) {
+  cart = cart.filter((item) => item.title !== title); // Remove item completely
+  updateCart();
+}
+
+
+function changeQuantity(title, change) {
+  const item = cart.find((item) => item.title === title);
+  if (item) {
+    if (change === -1 && item.quantity > 1) {
+      item.quantity--;
+    } else if (change === 1) {
+      item.quantity++;
+    }
+  }
+  updateCart();
+}
+
 function updateCart() {
   cartContainer.innerHTML = "";
   countElement.innerText = cart.length;
 
-  cart.map((item) => {
+  cart.forEach((item) => {
     const cartItem = document.createElement("div");
     cartItem.classList.add("cart-item");
+
     cartItem.innerHTML = `
-    
+        <img src="${item.image}" alt="${item.title}">
+        <div class="cart-details">
+            <h4>${item.title}</h4>
+            <div class="quantity-control">
+                <button class="qty-btn decrease" onclick="changeQuantity('${item.title}', -1)">-</button>
+                <span>${item.quantity}</span>
+                <button class="qty-btn increase" onclick="changeQuantity('${item.title}', 1)">+</button>
+            </div>
+        </div>
+        <button class="remove-btn" onclick="removeFromCart('${item.title}')">Remove</button>
     `;
+    cartContainer.appendChild(cartItem);
   });
 }
