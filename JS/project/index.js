@@ -3,7 +3,7 @@ const api = "http://localhost:3000/Books";
 async function fetchData() {
   try {
     const res = await fetch(api);
-    if (!res.ok) throw new Error("Error in API url");
+    if (!res.ok) throw new Error("Network response was not ok");
     return await res.json();
   } catch (err) {
     console.error("Error fetching data: ", err);
@@ -14,11 +14,12 @@ async function displayAllBooks(data) {
   const booksContainer = document.getElementById("booksContainer");
   booksContainer.innerHTML = "";
 
-  if (!data) {
+  if (!data || data.length === 0) {
     document.getElementById("errorMsg").style.display = "block";
     return;
   }
 
+  document.getElementById("errorMsg").style.display = "none";
 
   data.map((book) => {
     const card = document.createElement("div");
@@ -30,6 +31,7 @@ async function displayAllBooks(data) {
         <p><strong>Genre:</strong> ${book.genre}</p>
         <p><strong>Year:</strong> ${book.year}</p>
         <p><strong>Pages:</strong> ${book.pages}</p>
+        <button class="shop-now" id="shop-now">Buy Now</button>
     `;
     booksContainer.appendChild(card);
   });
@@ -67,4 +69,4 @@ async function initializer() {
   });
 }
 
-initializer();
+initial();
