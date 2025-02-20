@@ -3,8 +3,8 @@ const api = "http://localhost:3000/Books";
 async function fetchData() {
   try {
     const res = await fetch(api);
-    if (!res.ok) throw new Error("Network response was not ok");
-    return await res.json();
+    const data = res.json();
+    return data;
   } catch (err) {
     console.error("Error fetching data: ", err);
   }
@@ -14,12 +14,12 @@ async function displayAllBooks(data) {
   const booksContainer = document.getElementById("booksContainer");
   booksContainer.innerHTML = "";
 
-  if (!data || data.length === 0) {
-    document.getElementById("errorMsg").style.display = "block";
+  if (!data) {
+    document.getElementById("errorMsg").style.display = "";
     return;
   }
 
-  document.getElementById("errorMsg").style.display = "none";
+  document.getElementById("errorMsg");
 
   data.map((book) => {
     const card = document.createElement("div");
@@ -45,17 +45,17 @@ async function filteredBooks(genre) {
   displayAllBooks(filteredData);
 }
 
-async function sortBooksBy(prop, order = "asc") {
+async function sortBooksBy(property, order = "asc") {
   const data = await fetchData();
   if (!data) return;
 
   data.sort((a, b) =>
-    order === "asc" ? a[prop] - b[prop] : b[prop] - a[prop]
+    order === "asc" ? a[property] - b[property] : b[property] - a[property]
   );
   displayAllBooks(data);
 }
 
-async function initializer() {
+async function initial() {
   const data = await fetchData();
   displayAllBooks(data);
   const genreFilter = document.getElementById("genreFilter");
@@ -70,3 +70,39 @@ async function initializer() {
 }
 
 initial();
+
+const cartCard = document.getElementById("cart");
+const cartToggle = document.getElementById("toggleCartBtn");
+
+cartToggle.addEventListener("click", function () {
+  if (cartCard.style.display === "block") {
+    cartCard.style.display = "none"; // Hide cart
+  } else {
+    cartCard.style.display = "block"; // Show cart
+  }
+});
+
+const cart = new Array();
+const cartContainer = document.querySelector(".cart-items");
+const countElement = document.getElementById("count");
+function addToCart(title, image) {
+  const existingItem = cart.find((item) => item.title === title);
+  if (existingItem) {
+    existingItem.quantity++;
+  } else {
+    cart.push({ title, image, quantity: 1 });
+  }
+  updateCart();
+}
+function updateCart() {
+  cartContainer.innerHTML = "";
+  countElement.innerText = cart.length;
+
+  cart.map((item) => {
+    const cartItem = document.createElement("div");
+    cartItem.classList.add("cart-item");
+    cartItem.innerHTML = `
+    
+    `;
+  });
+}
