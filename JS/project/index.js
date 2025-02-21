@@ -3,7 +3,7 @@ const api = "http://localhost:3000/Books";
 async function fetchData() {
   try {
     const res = await fetch(api);
-    const data = res.json();
+    const data = await res.json();
     return data;
   } catch (err) {
     console.error("Error fetching data: ", err);
@@ -61,15 +61,18 @@ async function sortBooksBy(property, order = "asc") {
 async function initial() {
   const data = await fetchData();
   displayAllBooks(data);
-  const genreFilter = document.getElementById("genreFilter");
-  genreFilter.addEventListener("change", async (event) => {
-    const selectedGenre = event.target.value;
-    if (selectedGenre) {
-      filteredBooks(selectedGenre);
-    } else {
-      displayAllBooks(await fetchData());
-    }
-  });
+  document.getElementById("searchInput").addEventListener("input", searchBooks);
+  document
+    .getElementById("genreFilter")
+    .addEventListener("change", async (event) => {
+      const selectedGenre = event.target.value;
+      if (selectedGenre) {
+        const filteredData = data.filter((d) => d.genre === selectedGenre);
+        displayAllBooks(filteredData);
+      } else {
+        displayAllBooks(data);
+      }
+    });
 }
 
 initial();
@@ -79,9 +82,9 @@ const cartToggle = document.getElementById("toggleCartBtn");
 
 cartToggle.addEventListener("click", function () {
   if (cartCard.style.display === "block") {
-    cartCard.style.display = "none"; 
+    cartCard.style.display = "none";
   } else {
-    cartCard.style.display = "block"; 
+    cartCard.style.display = "block";
   }
 });
 
@@ -100,10 +103,9 @@ function addToCart(title, image, cost) {
 }
 
 function removeFromCart(title) {
-  cart = cart.filter((item) => item.title !== title); 
+  cart = cart.filter((item) => item.title !== title);
   updateCart();
 }
-
 
 function changeQuantity(title, change) {
   const item = cart.find((item) => item.title === title);
@@ -117,7 +119,6 @@ function changeQuantity(title, change) {
   updateCart();
 }
 
-
 function updateCart() {
   cartContainer.innerHTML = "";
   countElement.innerText = cart.length;
@@ -125,8 +126,8 @@ function updateCart() {
   let totalCartCost = 0;
 
   cart.forEach((item) => {
-    const itemTotalCost = item.cost * item.quantity; 
-    totalCartCost += itemTotalCost; 
+    const itemTotalCost = item.cost * item.quantity;
+    totalCartCost += itemTotalCost;
 
     const cartItem = document.createElement("div");
     cartItem.classList.add("cart-item");
@@ -137,21 +138,49 @@ function updateCart() {
             <h4>${item.title}</h4>
             <p>Price: $${item.cost.toFixed(2)}</p>
             <div class="quantity-control">
-                <button class="qty-btn decrease" onclick="changeQuantity('${item.title}', -1)">-</button>
+                <button class="qty-btn decrease" onclick="changeQuantity('${
+                  item.title
+                }', -1)">-</button>
                 <span>${item.quantity}</span>
-                <button class="qty-btn increase" onclick="changeQuantity('${item.title}', 1)">+</button>
+                <button class="qty-btn increase" onclick="changeQuantity('${
+                  item.title
+                }', 1)">+</button>
             </div>
             <p><strong>Total: $${itemTotalCost.toFixed(2)}</strong></p>
         </div>
-        <button class="remove-btn" onclick="removeFromCart('${item.title}')">Remove</button>
+        <button class="remove-btn" onclick="removeFromCart('${
+          item.title
+        }')">Remove</button>
         <hr>
     `;
     cartContainer.appendChild(cartItem);
   });
 
-  // Display overall cart total
   const totalCostElement = document.createElement("div");
   totalCostElement.classList.add("cart-total");
-  totalCostElement.innerHTML = `<h3>Total Cost: $${totalCartCost.toFixed(2)}</h3>`;
+  totalCostElement.innerHTML = `<h3>Total Cost: $${totalCartCost.toFixed(
+    2
+  )}</h3>`;
   cartContainer.appendChild(totalCostElement);
+}
+
+async function searchBooks() {
+  const query = document.getElementById("searchInput").value.toLowerCase();
+  const data = await fetchData();
+
+  if (!data) {
+    return;
+  }
+
+  const filteredData = data.filter((book) =>
+    book.title.toLowerCase().includes(query)
+  );
+
+  if (filteredData.length === 0) {
+    document.getElementById("errorMsg").style.display = "block";
+    document.getElementById("booksContainer").innerHTML = "";
+  } else {
+    document.getElementById("errorMsg").style.display = "none";
+    displayAllBooks(filteredData);
+  }
 }
