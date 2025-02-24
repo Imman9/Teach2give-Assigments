@@ -1,12 +1,14 @@
 {
-  "name": "1type",
+  "name": "bookslibrary",
   "version": "1.0.0",
   "main": "index.js",
+  "type": "module",
   "scripts": {
-    "dev": "tsc --watch",
-    "dev:start": "nodemon src/index.js",
+    "dev": "tsc --watch ",
+    "serve": "vite",
     "build": "tsc",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "preview": "vite preview",
+    "test": "Vite test"
   },
   "keywords": [],
   "author": "",
@@ -14,10 +16,10 @@
   "description": "",
   "devDependencies": {
     "nodemon": "^3.1.9",
-    "prettier": "^3.5.1",
-    "tsd": "^0.31.2",
     "typescript": "^5.7.3",
-    "vitest": "^3.0.6"
+    "vite": "^6.1.1"
   },
-  "type": "module"
+  "dependencies": {
+    "json": "^11.0.0"
+  }
 }
