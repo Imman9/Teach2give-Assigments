@@ -8,8 +8,11 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var _a, _b;
 const api = "http://localhost:3000/Books";
 let cart = [];
+const cartContainer = document.querySelector(".cart-items");
+const countElement = document.getElementById("count");
 function fetchData() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -19,6 +22,7 @@ function fetchData() {
         }
         catch (err) {
             console.error("Error fetching data: ", err);
+            return null;
         }
     });
 }
@@ -27,11 +31,11 @@ function displayAllBooks(data) {
         const booksContainer = document.getElementById("booksContainer");
         booksContainer.innerHTML = "";
         if (!data) {
-            document.getElementById("errorMsg").style.display =
-                "block";
+            const errorMsg = document.getElementById("errorMsg");
+            errorMsg.style.display = "block";
             return;
         }
-        data.forEach((book) => {
+        data.map((book) => {
             const card = document.createElement("div");
             card.classList.add("book");
             card.innerHTML = `
@@ -51,28 +55,21 @@ function displayAllBooks(data) {
         });
     });
 }
-function filteredBooks(genre) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const data = yield fetchData();
-        if (!data)
-            return;
-        const filteredData = data.filter((d) => d.genre === genre);
-        displayAllBooks(filteredData);
-    });
-}
 function sortBooksBy(property_1) {
     return __awaiter(this, arguments, void 0, function* (property, order = "asc") {
         const data = yield fetchData();
         if (!data)
             return;
-        data.sort((a, b) => {
-            const valA = Number(a[property]);
-            const valB = Number(b[property]);
-            return order === "asc" ? valA - valB : valB - valA;
-        });
+        data.sort((a, b) => order === "asc"
+            ? Number(a[property]) - Number(b[property])
+            : Number(b[property]) - Number(a[property]));
         displayAllBooks(data);
     });
 }
+(_a = document
+    .getElementById("sortAsc")) === null || _a === void 0 ? void 0 : _a.addEventListener("click", () => sortBooksBy("year", "asc"));
+(_b = document
+    .getElementById("sortDesc")) === null || _b === void 0 ? void 0 : _b.addEventListener("click", () => sortBooksBy("year", "desc"));
 function initial() {
     return __awaiter(this, void 0, void 0, function* () {
         var _a, _b;
@@ -83,19 +80,23 @@ function initial() {
         (_b = document
             .getElementById("genreFilter")) === null || _b === void 0 ? void 0 : _b.addEventListener("change", (event) => __awaiter(this, void 0, void 0, function* () {
             const selectedGenre = event.target.value;
-            selectedGenre ? filteredBooks(selectedGenre) : displayAllBooks(data);
+            if (selectedGenre) {
+                const filteredData = (data === null || data === void 0 ? void 0 : data.filter((d) => d.genre === selectedGenre)) || [];
+                displayAllBooks(filteredData);
+            }
+            else {
+                displayAllBooks(data);
+            }
         }));
     });
 }
 initial();
 const cartCard = document.getElementById("cart");
 const cartToggle = document.getElementById("toggleCartBtn");
-cartToggle.addEventListener("click", () => {
+cartToggle.addEventListener("click", function () {
     cartCard.style.display =
         cartCard.style.display === "block" ? "none" : "block";
 });
-const cartContainer = document.querySelector(".cart-items");
-const countElement = document.getElementById("count");
 function addToCart(book) {
     const existingItem = cart.find((item) => item.title === book.title);
     if (existingItem) {
@@ -113,7 +114,12 @@ function removeFromCart(title) {
 function changeQuantity(title, change) {
     const item = cart.find((item) => item.title === title);
     if (item) {
-        item.quantity = Math.max(1, item.quantity + change);
+        if (change === -1 && item.quantity > 1) {
+            item.quantity--;
+        }
+        else if (change === 1) {
+            item.quantity++;
+        }
     }
     updateCart();
 }
@@ -122,6 +128,7 @@ function updateCart() {
     countElement.innerText = cart.length.toString();
     let totalCartCost = 0;
     cart.forEach((item) => {
+        var _a, _b, _c;
         const itemTotalCost = item.cost * item.quantity;
         totalCartCost += itemTotalCost;
         const cartItem = document.createElement("div");
@@ -132,16 +139,22 @@ function updateCart() {
             <h4>${item.title}</h4>
             <p>Price: $${item.cost.toFixed(2)}</p>
             <div class="quantity-control">
-                <button class="qty-btn decrease" onclick="changeQuantity('${item.title}', -1)">-</button>
+                <button class="qty-btn decrease">-</button>
                 <span>${item.quantity}</span>
-                <button class="qty-btn increase" onclick="changeQuantity('${item.title}', 1)">+</button>
+                <button class="qty-btn increase">+</button>
             </div>
             <p><strong>Total: $${itemTotalCost.toFixed(2)}</strong></p>
         </div>
-        <button class="remove-btn" onclick="removeFromCart('${item.title}')">Remove</button>
+        <button class="remove-btn">Remove</button>
         <hr>
     `;
         cartContainer.appendChild(cartItem);
+        (_a = cartItem
+            .querySelector(".remove-btn")) === null || _a === void 0 ? void 0 : _a.addEventListener("click", () => removeFromCart(item.title));
+        (_b = cartItem
+            .querySelector(".decrease")) === null || _b === void 0 ? void 0 : _b.addEventListener("click", () => changeQuantity(item.title, -1));
+        (_c = cartItem
+            .querySelector(".increase")) === null || _c === void 0 ? void 0 : _c.addEventListener("click", () => changeQuantity(item.title, 1));
     });
     const totalCostElement = document.createElement("div");
     totalCostElement.classList.add("cart-total");
@@ -155,15 +168,10 @@ function searchBooks() {
         if (!data)
             return;
         const filteredData = data.filter((book) => book.title.toLowerCase().includes(query));
-        if (filteredData.length === 0) {
-            document.getElementById("errorMsg").style.display =
-                "block";
-            document.getElementById("booksContainer").innerHTML = "";
-        }
-        else {
-            document.getElementById("errorMsg").style.display = "none";
-            displayAllBooks(filteredData);
-        }
+        document.getElementById("errorMsg").style.display = filteredData.length
+            ? "none"
+            : "block";
+        displayAllBooks(filteredData);
     });
 }
 //# sourceMappingURL=index.js.map

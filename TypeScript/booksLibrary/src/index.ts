@@ -1,47 +1,47 @@
 const api: string = "http://localhost:3000/Books";
 
-type Book = {
+interface Book {
   title: string;
-  image: string;
   author: string;
   genre: string;
   year: number;
   pages: number;
   cost: number;
-};
-
-type CartItem = {
-  title: string;
   image: string;
-  cost: number;
+}
+
+interface CartItem extends Book {
   quantity: number;
-};
+}
 
 let cart: CartItem[] = [];
+const cartContainer = document.querySelector(".cart-items") as HTMLDivElement;
+const countElement = document.getElementById("count") as HTMLElement;
 
-async function fetchData(): Promise<Book[] | undefined> {
+async function fetchData(): Promise<Book[] | null> {
   try {
     const res = await fetch(api);
     const data: Book[] = await res.json();
     return data;
   } catch (err) {
     console.error("Error fetching data: ", err);
+    return null;
   }
 }
 
-async function displayAllBooks(data: Book[] | undefined): Promise<void> {
+async function displayAllBooks(data: Book[] | null): Promise<void> {
   const booksContainer = document.getElementById(
     "booksContainer"
-  ) as HTMLElement;
+  ) as HTMLDivElement;
   booksContainer.innerHTML = "";
 
   if (!data) {
-    (document.getElementById("errorMsg") as HTMLElement).style.display =
-      "block";
+    const errorMsg = document.getElementById("errorMsg") as HTMLDivElement;
+    errorMsg.style.display = "block";
     return;
   }
 
-  data.forEach((book) => {
+  data.map((book) => {
     const card = document.createElement("div");
     card.classList.add("book");
     card.innerHTML = `
@@ -62,13 +62,6 @@ async function displayAllBooks(data: Book[] | undefined): Promise<void> {
   });
 }
 
-async function filteredBooks(genre: string): Promise<void> {
-  const data = await fetchData();
-  if (!data) return;
-  const filteredData = data.filter((d) => d.genre === genre);
-  displayAllBooks(filteredData);
-}
-
 async function sortBooksBy(
   property: keyof Book,
   order: "asc" | "desc" = "asc"
@@ -76,20 +69,24 @@ async function sortBooksBy(
   const data = await fetchData();
   if (!data) return;
 
-  data.sort((a, b) => {
-    const valA = Number(a[property]);
-    const valB = Number(b[property]);
-
-    return order === "asc" ? valA - valB : valB - valA;
-  });
-
+  data.sort((a, b) =>
+    order === "asc"
+      ? Number(a[property]) - Number(b[property])
+      : Number(b[property]) - Number(a[property])
+  );
   displayAllBooks(data);
 }
+
+document
+  .getElementById("sortAsc")
+  ?.addEventListener("click", () => sortBooksBy("year", "asc"));
+document
+  .getElementById("sortDesc")
+  ?.addEventListener("click", () => sortBooksBy("year", "desc"));
 
 async function initial(): Promise<void> {
   const data = await fetchData();
   displayAllBooks(data);
-
   document
     .getElementById("searchInput")
     ?.addEventListener("input", searchBooks);
@@ -97,22 +94,27 @@ async function initial(): Promise<void> {
     .getElementById("genreFilter")
     ?.addEventListener("change", async (event) => {
       const selectedGenre = (event.target as HTMLSelectElement).value;
-      selectedGenre ? filteredBooks(selectedGenre) : displayAllBooks(data);
+      if (selectedGenre) {
+        const filteredData =
+          data?.filter((d) => d.genre === selectedGenre) || [];
+        displayAllBooks(filteredData);
+      } else {
+        displayAllBooks(data);
+      }
     });
 }
 
 initial();
 
-const cartCard = document.getElementById("cart") as HTMLElement;
-const cartToggle = document.getElementById("toggleCartBtn") as HTMLElement;
+const cartCard = document.getElementById("cart") as HTMLDivElement;
+const cartToggle = document.getElementById(
+  "toggleCartBtn"
+) as HTMLButtonElement;
 
-cartToggle.addEventListener("click", () => {
+cartToggle.addEventListener("click", function () {
   cartCard.style.display =
     cartCard.style.display === "block" ? "none" : "block";
 });
-
-const cartContainer = document.querySelector(".cart-items") as HTMLElement;
-const countElement = document.getElementById("count") as HTMLElement;
 
 function addToCart(book: Book): void {
   const existingItem = cart.find((item) => item.title === book.title);
@@ -132,7 +134,11 @@ function removeFromCart(title: string): void {
 function changeQuantity(title: string, change: number): void {
   const item = cart.find((item) => item.title === title);
   if (item) {
-    item.quantity = Math.max(1, item.quantity + change);
+    if (change === -1 && item.quantity > 1) {
+      item.quantity--;
+    } else if (change === 1) {
+      item.quantity++;
+    }
   }
   updateCart();
 }
@@ -149,29 +155,32 @@ function updateCart(): void {
 
     const cartItem = document.createElement("div");
     cartItem.classList.add("cart-item");
-
     cartItem.innerHTML = `
         <img src="${item.image}" alt="${item.title}">
         <div class="cart-details">
             <h4>${item.title}</h4>
             <p>Price: $${item.cost.toFixed(2)}</p>
             <div class="quantity-control">
-                <button class="qty-btn decrease" onclick="changeQuantity('${
-                  item.title
-                }', -1)">-</button>
+                <button class="qty-btn decrease">-</button>
                 <span>${item.quantity}</span>
-                <button class="qty-btn increase" onclick="changeQuantity('${
-                  item.title
-                }', 1)">+</button>
+                <button class="qty-btn increase">+</button>
             </div>
             <p><strong>Total: $${itemTotalCost.toFixed(2)}</strong></p>
         </div>
-        <button class="remove-btn" onclick="removeFromCart('${
-          item.title
-        }')">Remove</button>
+        <button class="remove-btn">Remove</button>
         <hr>
     `;
     cartContainer.appendChild(cartItem);
+
+    cartItem
+      .querySelector(".remove-btn")
+      ?.addEventListener("click", () => removeFromCart(item.title));
+    cartItem
+      .querySelector(".decrease")
+      ?.addEventListener("click", () => changeQuantity(item.title, -1));
+    cartItem
+      .querySelector(".increase")
+      ?.addEventListener("click", () => changeQuantity(item.title, 1));
   });
 
   const totalCostElement = document.createElement("div");
@@ -193,13 +202,8 @@ async function searchBooks(): Promise<void> {
   const filteredData = data.filter((book) =>
     book.title.toLowerCase().includes(query)
   );
-
-  if (filteredData.length === 0) {
-    (document.getElementById("errorMsg") as HTMLElement).style.display =
-      "block";
-    document.getElementById("booksContainer")!.innerHTML = "";
-  } else {
-    (document.getElementById("errorMsg") as HTMLElement).style.display = "none";
-    displayAllBooks(filteredData);
-  }
+  document.getElementById("errorMsg")!.style.display = filteredData.length
+    ? "none"
+    : "block";
+  displayAllBooks(filteredData);
 }

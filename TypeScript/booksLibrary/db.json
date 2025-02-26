@@ -14,7 +14,7 @@
     },
     {
       "id": 2,
-      "title": "1984",
+      "title": "Reacher",
       "author": "George Orwell",
       "genre": "Dystopian",
       "year": 1949,
@@ -46,7 +46,7 @@
       "publisher": "T. Egerton, Whitehall",
       "description": "A romantic novel of manners that follows the character development of Elizabeth Bennet, the protagonist.",
       "image": "https://i.ebayimg.com/images/g/ikQAAOSwm8JnkrMW/s-l500.webp",
-      "cost": 11.50
+      "cost": 11.5
     },
     {
       "id": 5,
@@ -106,7 +106,7 @@
       "publisher": "The Russian Messenger",
       "description": "A novel that chronicles the French invasion of Russia and the impact of the Napoleonic era on Tsarist society.",
       "image": "https://i.ebayimg.com/images/g/28AAAOSw5Alf~fcP/s-l500.webp",
-      "cost": 18.50
+      "cost": 18.5
     },
     {
       "id": 10,

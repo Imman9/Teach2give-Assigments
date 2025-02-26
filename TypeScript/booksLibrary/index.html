@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -49,10 +50,8 @@
           <option value="Adventure">Adventure</option>
           <option value="Romance">Romance</option>
         </select>
-        <button onclick="sortBooksBy('year', 'asc')">Sort by Year (Asc)</button>
-        <button onclick="sortBooksBy('year', 'desc')">
-          Sort by Year (Desc)
-        </button>
+        <button id="sortAsc">Sort by Year (Asc)</button>
+        <button id="sortDesc">Sort by Year (Desc)</button>
       </div>
 
       <div id="booksContainer" class="book-list"></div>

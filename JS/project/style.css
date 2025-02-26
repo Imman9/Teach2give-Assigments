@@ -61,7 +61,7 @@ body {
   position: absolute;
   top: 150px;
   right: 50px;
-  background-color: white;
+  background-color: #333;
   width: 300px;
   border-radius: 10px;
   border: 1px solid #ddd;
@@ -76,6 +76,7 @@ body {
 }
 
 .cart h3 {
+  color: white;
   margin-bottom: 10px;
   font-size: 18px;
 }

@@ -11,3 +11,4 @@ const rectangle = {
 };
 console.log(getRectangleArea(rectangle));
 console.log(getRectanglePerimeter(rectangle));
+//# sourceMappingURL=index.js.map
