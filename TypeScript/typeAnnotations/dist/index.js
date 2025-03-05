@@ -16,10 +16,11 @@ processRecipe({
     ],
     instructions: "...",
 });
-//Exercise 3 Tuples
-const setRange = (range) => {
+// Exercise 3 Tuples
+export const setRange = (range) => {
     const x = range[0];
     const y = range[1];
+    return { x, y };
 };
 // Exercise 4: Optional Members of Tuples
 const goToLocation = (coordinates) => {
@@ -36,7 +37,45 @@ userMap.set("3", { name: "Anna", age: 29 });
 userMap.set(3, "123");
 //Exercise 2: JSON.parse() Can't Receive Type Arguments
 const parsedData = JSON.parse('{"name": "Alice", "age": 30}');
-//Typing Functions
-const logAlbumInfo = (title, trackCount, isReleased, releaseDate) => { };
-export {};
+// type test =typeof parsedData
+//     {
+//       name: string;
+//       age: number;
+//     }
+//   ;
+// Typing Functions
+// Exercise 1: Optional Function Parameters
+const concatName = (first, last) => {
+    if (!last) {
+        return first;
+    }
+    return `${first} ${last}`;
+};
+const result = concatName("John", "Doe");
+const result2 = concatName("John");
+//Exercise 2: Default Function Parameters
+const concatName1 = (first, last) => {
+    if (!last)
+        return first;
+    return `${first} ${last}`;
+};
+// Exercise 3: Rest Parameters
+function concatenate(...strings) {
+    return strings.join("");
+}
+const modifyUser = (user, id, makeChange) => {
+    return user.map((u) => {
+        if (u.id === id) {
+            return makeChange(u);
+        }
+        return u;
+    });
+};
+//Exercise  5: Functions Returning void
+const addClickEventListener = (listener) => {
+    document.addEventListener("click", listener);
+};
+addClickEventListener(() => {
+    console.log("Clicked!");
+});
 //# sourceMappingURL=index.js.map

@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "tsc --watch ",
-    "dev:start": "nodemon index.js",
+    "dev:start": "nodemon mutability.ts",
     "serve": "vite",
     "build": "tsc",
     "preview": "vite preview",

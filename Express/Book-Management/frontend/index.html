@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Books App</title>
+    <link rel="stylesheet" href="styles.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+      integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+  </head>
+  <body>
+    <div class="container" id="container">
+      <nav class="nav-bar">
+        <h1>Books Library</h1>
+        <div class="icons">
+          <button class="btn">
+            <i class="fa fa-cart-plus" aria-hidden="true"></i>
+            <span class="count" id="count">0</span>
+          </button>
+          <button class="drop-down" id="toggleCartBtn">
+            <i class="fa fa-sort-desc" aria-hidden="true"></i>
+          </button>
+        </div>
+      </nav>
+
+      <div class="cart hidden" id="cart">
+        <h3>Cart</h3>
+        <div class="cart-items"></div>
+      </div>
+
+      <div class="filters">
+        <input
+          type="text"
+          id="searchInput"
+          placeholder="search book by name..."
+        />
+
+        <select id="genreFilter">
+          <option value="">Select Genre</option>
+          <option value="Dystopian">Dystopian</option>
+          <option value="Fiction">Fiction</option>
+          <option value="Fantasy">Fantasy</option>
+          <option value="Epic Poetry">Epic Poetry</option>
+          <option value="Historical Fiction">Historical Fiction</option>
+          <option value="Adventure">Adventure</option>
+          <option value="Romance">Romance</option>
+        </select>
+        <button id="sortAsc">Sort by Year (Asc)</button>
+        <button id="sortDesc">Sort by Year (Desc)</button>
+      </div>
+
+      <div id="booksContainer" class="book-list"></div>
+      <p id="errorMsg" class="error" style="display: none">No books found.</p>
+    </div>
+    <script type="module" src="./src/index.ts"></script>
+  </body>
+</html>
