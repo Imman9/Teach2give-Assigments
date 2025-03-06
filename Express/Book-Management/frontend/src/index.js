@@ -8,15 +8,16 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var _a, _b;
-const api = "http://localhost:3000/all";
+var _a, _b, _c, _d;
+const api = "http://localhost:3000/books";
 let cart = [];
 const cartContainer = document.querySelector(".cart-items");
 const countElement = document.getElementById("count");
 function fetchData() {
-    return __awaiter(this, void 0, void 0, function* () {
+    return __awaiter(this, arguments, void 0, function* (params = {}) {
         try {
-            const res = yield fetch(api);
+            const queryString = new URLSearchParams(params).toString();
+            const res = yield fetch(`${api}?${queryString}`);
             const data = yield res.json();
             return data;
         }
@@ -30,12 +31,12 @@ function displayAllBooks(data) {
     return __awaiter(this, void 0, void 0, function* () {
         const booksContainer = document.getElementById("booksContainer");
         booksContainer.innerHTML = "";
-        if (!data) {
-            const errorMsg = document.getElementById("errorMsg");
-            errorMsg.style.display = "block";
+        if (!data || data.length === 0) {
+            document.getElementById("errorMsg").style.display = "block";
             return;
         }
-        data.map((book) => {
+        document.getElementById("errorMsg").style.display = "none";
+        data.forEach((book) => {
             const card = document.createElement("div");
             card.classList.add("book");
             card.innerHTML = `
@@ -55,42 +56,33 @@ function displayAllBooks(data) {
         });
     });
 }
-function sortBooksBy(property_1) {
-    return __awaiter(this, arguments, void 0, function* (property, order = "asc") {
-        const data = yield fetchData();
-        if (!data)
-            return;
-        data.sort((a, b) => order === "asc"
-            ? Number(a[property]) - Number(b[property])
-            : Number(b[property]) - Number(a[property]));
-        displayAllBooks(data);
-    });
-}
 (_a = document
-    .getElementById("sortAsc")) === null || _a === void 0 ? void 0 : _a.addEventListener("click", () => sortBooksBy("year", "asc"));
-(_b = document
-    .getElementById("sortDesc")) === null || _b === void 0 ? void 0 : _b.addEventListener("click", () => sortBooksBy("year", "desc"));
+    .getElementById("genreFilter")) === null || _a === void 0 ? void 0 : _a.addEventListener("change", (event) => __awaiter(void 0, void 0, void 0, function* () {
+    const selectedGenre = event.target.value;
+    const data = yield fetchData(selectedGenre ? { genre: selectedGenre } : {});
+    displayAllBooks(data);
+}));
+(_b = document.getElementById("searchInput")) === null || _b === void 0 ? void 0 : _b.addEventListener("input", () => __awaiter(void 0, void 0, void 0, function* () {
+    const query = document.getElementById("searchInput").value.trim();
+    const data = yield fetchData(query ? { title: query } : {});
+    displayAllBooks(data);
+}));
+(_c = document.getElementById("sortAsc")) === null || _c === void 0 ? void 0 : _c.addEventListener("click", () => __awaiter(void 0, void 0, void 0, function* () {
+    const data = yield fetchData({ sort: "asc" });
+    displayAllBooks(data);
+}));
+(_d = document.getElementById("sortDesc")) === null || _d === void 0 ? void 0 : _d.addEventListener("click", () => __awaiter(void 0, void 0, void 0, function* () {
+    const data = yield fetchData({ sort: "desc" });
+    displayAllBooks(data);
+}));
 function initial() {
     return __awaiter(this, void 0, void 0, function* () {
-        var _a, _b;
         const data = yield fetchData();
         displayAllBooks(data);
-        (_a = document
-            .getElementById("searchInput")) === null || _a === void 0 ? void 0 : _a.addEventListener("input", searchBooks);
-        (_b = document
-            .getElementById("genreFilter")) === null || _b === void 0 ? void 0 : _b.addEventListener("change", (event) => __awaiter(this, void 0, void 0, function* () {
-            const selectedGenre = event.target.value;
-            if (selectedGenre) {
-                const filteredData = (data === null || data === void 0 ? void 0 : data.filter((d) => d.genre === selectedGenre)) || [];
-                displayAllBooks(filteredData);
-            }
-            else {
-                displayAllBooks(data);
-            }
-        }));
     });
 }
 initial();
+// Cart Functions
 const cartCard = document.getElementById("cart");
 const cartToggle = document.getElementById("toggleCartBtn");
 cartToggle.addEventListener("click", function () {
@@ -160,17 +152,4 @@ function updateCart() {
     totalCostElement.classList.add("cart-total");
     totalCostElement.innerHTML = `<h3>Total Cost: $${totalCartCost.toFixed(2)}</h3>`;
     cartContainer.appendChild(totalCostElement);
-}
-function searchBooks() {
-    return __awaiter(this, void 0, void 0, function* () {
-        const query = document.getElementById("searchInput").value.toLowerCase();
-        const data = yield fetchData();
-        if (!data)
-            return;
-        const filteredData = data.filter((book) => book.title.toLowerCase().includes(query));
-        document.getElementById("errorMsg").style.display = filteredData.length
-            ? "none"
-            : "block";
-        displayAllBooks(filteredData);
-    });
 }

@@ -1,6 +1,7 @@
-const api: string = "http://localhost:3000/all";
+const api: string = "http://localhost:3000/books";
 
 interface Book {
+  id: number;
   title: string;
   author: string;
   genre: string;
@@ -18,9 +19,14 @@ let cart: CartItem[] = [];
 const cartContainer = document.querySelector(".cart-items") as HTMLDivElement;
 const countElement = document.getElementById("count") as HTMLElement;
 
-async function fetchData(): Promise<Book[] | null> {
+async function fetchData(
+  params: Record<string, string | number> = {}
+): Promise<Book[] | null> {
   try {
-    const res = await fetch(api);
+    const queryString = new URLSearchParams(
+      params as Record<string, string>
+    ).toString();
+    const res = await fetch(`${api}?${queryString}`);
     const data: Book[] = await res.json();
     return data;
   } catch (err) {
@@ -35,13 +41,14 @@ async function displayAllBooks(data: Book[] | null): Promise<void> {
   ) as HTMLDivElement;
   booksContainer.innerHTML = "";
 
-  if (!data) {
-    const errorMsg = document.getElementById("errorMsg") as HTMLDivElement;
-    errorMsg.style.display = "block";
+  if (!data || data.length === 0) {
+    document.getElementById("errorMsg")!.style.display = "block";
     return;
   }
 
-  data.map((book) => {
+  document.getElementById("errorMsg")!.style.display = "none";
+
+  data.forEach((book) => {
     const card = document.createElement("div");
     card.classList.add("book");
     card.innerHTML = `
@@ -62,50 +69,40 @@ async function displayAllBooks(data: Book[] | null): Promise<void> {
   });
 }
 
-async function sortBooksBy(
-  property: keyof Book,
-  order: "asc" | "desc" = "asc"
-): Promise<void> {
-  const data = await fetchData();
-  if (!data) return;
+document
+  .getElementById("genreFilter")
+  ?.addEventListener("change", async (event) => {
+    const selectedGenre = (event.target as HTMLSelectElement).value;
+    const data = await fetchData(selectedGenre ? { genre: selectedGenre } : {});
+    displayAllBooks(data);
+  });
 
-  data.sort((a, b) =>
-    order === "asc"
-      ? Number(a[property]) - Number(b[property])
-      : Number(b[property]) - Number(a[property])
-  );
+document.getElementById("searchInput")?.addEventListener("input", async () => {
+  const query = (
+    document.getElementById("searchInput") as HTMLInputElement
+  ).value.trim();
+  const data = await fetchData(query ? { title: query } : {});
   displayAllBooks(data);
-}
+});
 
-document
-  .getElementById("sortAsc")
-  ?.addEventListener("click", () => sortBooksBy("year", "asc"));
-document
-  .getElementById("sortDesc")
-  ?.addEventListener("click", () => sortBooksBy("year", "desc"));
+document.getElementById("sortAsc")?.addEventListener("click", async () => {
+  const data = await fetchData({ sort: "asc" });
+  displayAllBooks(data);
+});
+
+document.getElementById("sortDesc")?.addEventListener("click", async () => {
+  const data = await fetchData({ sort: "desc" });
+  displayAllBooks(data);
+});
 
 async function initial(): Promise<void> {
   const data = await fetchData();
   displayAllBooks(data);
-  document
-    .getElementById("searchInput")
-    ?.addEventListener("input", searchBooks);
-  document
-    .getElementById("genreFilter")
-    ?.addEventListener("change", async (event) => {
-      const selectedGenre = (event.target as HTMLSelectElement).value;
-      if (selectedGenre) {
-        const filteredData =
-          data?.filter((d) => d.genre === selectedGenre) || [];
-        displayAllBooks(filteredData);
-      } else {
-        displayAllBooks(data);
-      }
-    });
 }
 
 initial();
 
+// Cart Functions
 const cartCard = document.getElementById("cart") as HTMLDivElement;
 const cartToggle = document.getElementById(
   "toggleCartBtn"
@@ -189,21 +186,4 @@ function updateCart(): void {
     2
   )}</h3>`;
   cartContainer.appendChild(totalCostElement);
-}
-
-async function searchBooks(): Promise<void> {
-  const query = (
-    document.getElementById("searchInput") as HTMLInputElement
-  ).value.toLowerCase();
-  const data = await fetchData();
-
-  if (!data) return;
-
-  const filteredData = data.filter((book) =>
-    book.title.toLowerCase().includes(query)
-  );
-  document.getElementById("errorMsg")!.style.display = filteredData.length
-    ? "none"
-    : "block";
-  displayAllBooks(filteredData);
 }

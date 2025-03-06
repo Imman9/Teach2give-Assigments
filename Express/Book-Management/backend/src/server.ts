@@ -7,70 +7,63 @@ import cors from "cors";
 interface Book {
   id: number;
   title: string;
+  author: string;
   genre: string;
   year: number;
   pages: number;
+  cost: number;
+  image: string;
 }
 
-// Configure dotenv
 dotenv.config();
 
-// Instance of express
 const app = express();
 
-// Load the variables
-const port = process.env.PORT;
+const port = process.env.PORT || 3000;
 console.log(`Server running on port: ${port}`);
 
-// Enable CORS
 app.use(
   cors({
     origin: "http://localhost:5173",
     methods: "GET, PUT, DELETE",
-    credentials: true, // Allows cookies and auth headers
+    credentials: true,
   })
 );
 
 const _dirname = path.resolve();
 
-// Read book data from JSON file
 const bookData = readFileSync(
   path.join(_dirname, "src", "db", "booksData.json"),
   "utf-8"
 );
 
-// Parse book data into JSON
 const books: Book[] = JSON.parse(bookData);
 
-// Default route
-app.get("/", (req, res) => {
-  res.send("Hello world, Be HUMBLE to us");
-});
+app.get("/books", (req, res) => {
+  let filteredBooks = [...books];
 
-// ✅ **Updated `/all` endpoint with filtering & sorting**
-app.get("/all", (req, res) => {
-  let filteredBooks = books;
+  const { year, pages, genre, sort, title } = req.query;
 
-  const { genre, year, pages, sort } = req.query;
-
-  // 🏷️ **Filtering by genre**
   if (genre) {
     filteredBooks = filteredBooks.filter(
       (book) => book.genre.toLowerCase() === (genre as string).toLowerCase()
     );
   }
 
-  // 📅 **Filtering by year**
   if (year) {
-    filteredBooks = filteredBooks.filter((book) => book.year == Number(year));
+    filteredBooks = filteredBooks.filter((book) => book.year === Number(year));
   }
 
-  // 📖 **Filtering by pages (greater than or equal)**
   if (pages) {
-    filteredBooks = filteredBooks.filter((book) => book.pages >= Number(pages));
+    filteredBooks = filteredBooks.filter((book) => book.pages <= Number(pages));
   }
 
-  // 🔼🔽 **Sorting (year ascending or descending)**
+  if (title) {
+    filteredBooks = filteredBooks.filter((book) =>
+      book.title.toLowerCase().includes((title as string).toLowerCase())
+    );
+  }
+
   if (sort === "asc") {
     filteredBooks.sort((a, b) => a.year - b.year);
   } else if (sort === "desc") {
@@ -80,7 +73,6 @@ app.get("/all", (req, res) => {
   res.json(filteredBooks);
 });
 
-// Create server
 app.listen(port, () => {
   console.log(`Server is running on port: ${port}`);
 });
