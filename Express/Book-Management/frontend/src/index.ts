@@ -28,7 +28,10 @@ async function fetchData(
     ).toString();
     const res = await fetch(`${api}?${queryString}`);
     const data: Book[] = await res.json();
-    return data;
+    return data.map((book) => ({
+      ...book,
+      cost: Number(book.cost), // Ensure it's a number
+    }));
   } catch (err) {
     console.error("Error fetching data: ", err);
     return null;
@@ -120,6 +123,7 @@ function addToCart(book: Book): void {
   } else {
     cart.push({ ...book, quantity: 1 });
   }
+  console.log("Cart Updated:", cart);
   updateCart();
 }
 

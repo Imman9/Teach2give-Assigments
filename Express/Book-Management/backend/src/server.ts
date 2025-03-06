@@ -1,76 +1,128 @@
 import express from "express";
 import dotenv from "dotenv";
-import { readFileSync } from "fs";
-import path from "path";
-import cors from "cors";
 
-interface Book {
-  id: number;
-  title: string;
-  author: string;
-  genre: string;
-  year: number;
-  pages: number;
-  cost: number;
-  image: string;
-}
+import cors from "cors";
+import pool from "./db/db";
 
 dotenv.config();
 
 const app = express();
-
 const port = process.env.PORT || 3000;
+
+app.use(cors({ origin: "http://localhost:5173", credentials: true }));
+app.use(express.json()); // Parse JSON request bodies
+
 console.log(`Server running on port: ${port}`);
 
-app.use(
-  cors({
-    origin: "http://localhost:5173",
-    methods: "GET, PUT, DELETE",
-    credentials: true,
-  })
-);
+app.get("/books", async (req, res) => {
+  try {
+    let query = "SELECT * FROM books";
+    const filters: string[] = [];
+    const values: any[] = [];
 
-const _dirname = path.resolve();
+    const { year, pages, genre, sort, title } = req.query;
 
-const bookData = readFileSync(
-  path.join(_dirname, "src", "db", "booksData.json"),
-  "utf-8"
-);
+    if (genre) {
+      values.push(genre);
+      filters.push(`genre ILIKE $${values.length}`);
+    }
 
-const books: Book[] = JSON.parse(bookData);
+    if (year) {
+      values.push(Number(year));
+      filters.push(`year = $${values.length}`);
+    }
 
-app.get("/books", (req, res) => {
-  let filteredBooks = [...books];
+    if (pages) {
+      values.push(Number(pages));
+      filters.push(`pages <= $${values.length}`);
+    }
 
-  const { year, pages, genre, sort, title } = req.query;
+    if (title) {
+      values.push(`%${title}%`);
+      filters.push(`title ILIKE $${values.length}`);
+    }
 
-  if (genre) {
-    filteredBooks = filteredBooks.filter(
-      (book) => book.genre.toLowerCase() === (genre as string).toLowerCase()
+    if (filters.length > 0) {
+      query += ` WHERE ${filters.join(" AND ")}`;
+    }
+
+    if (sort === "asc") {
+      query += " ORDER BY year ASC";
+    } else if (sort === "desc") {
+      query += " ORDER BY year DESC";
+    }
+
+    const result = await pool.query(query, values);
+    res.json(result.rows);
+  } catch (err) {
+    if (err instanceof Error) {
+      res.status(500).json({ error: err.message });
+    } else {
+      res.status(500).json({ error: "An unknown error occurred" });
+    }
+  }
+});
+//posting a new book linked to user
+app.post("/users", async (req, res) => {
+  try {
+    const { name, email, password } = req.body;
+    const newUser = await pool.query(
+      "INSERT INTO users (name, email, password) VALUES ($1, $2, $3) RETURNING *",
+      [name, email, password]
     );
+    res.json(newUser.rows[0]);
+  } catch (err) {
+    if (err instanceof Error) {
+      res.status(500).json({ error: err.message });
+    } else {
+      res.status(500).json({ error: "An unknown error occurred" });
+    }
   }
-
-  if (year) {
-    filteredBooks = filteredBooks.filter((book) => book.year === Number(year));
+});
+//get all users
+app.get("/users", async (req, res) => {
+  try {
+    const users = await pool.query("SELECT * FROM users");
+    res.json(users.rows);
+  } catch (err) {
+    if (err instanceof Error) {
+      res.status(500).json({ error: err.message });
+    } else {
+      res.status(500).json({ error: "An unknown error occurred" });
+    }
   }
-
-  if (pages) {
-    filteredBooks = filteredBooks.filter((book) => book.pages <= Number(pages));
-  }
-
-  if (title) {
-    filteredBooks = filteredBooks.filter((book) =>
-      book.title.toLowerCase().includes((title as string).toLowerCase())
+});
+//post a new user
+app.post("/users", async (req, res) => {
+  try {
+    const { name, email, password } = req.body;
+    const newUser = await pool.query(
+      "INSERT INTO users (name, email, password) VALUES ($1, $2, $3) RETURNING *",
+      [name, email, password]
     );
+    res.json(newUser.rows[0]);
+  } catch (err) {
+    if (err instanceof Error) {
+      res.status(500).json({ error: err.message });
+    } else {
+      res.status(500).json({ error: "An unknown error occurred" });
+    }
   }
+});
 
-  if (sort === "asc") {
-    filteredBooks.sort((a, b) => a.year - b.year);
-  } else if (sort === "desc") {
-    filteredBooks.sort((a, b) => b.year - a.year);
+//delete a book
+app.delete("/books/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    await pool.query("DELETE FROM books WHERE id = $1", [id]);
+    res.json({ message: "Book deleted successfully" });
+  } catch (err) {
+    if (err instanceof Error) {
+      res.status(500).json({ error: err.message });
+    } else {
+      res.status(500).json({ error: "An unknown error occurred" });
+    }
   }
-
-  res.json(filteredBooks);
 });
 
 app.listen(port, () => {
