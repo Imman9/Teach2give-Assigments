@@ -32,31 +32,6 @@ body {
 .nav-bar h1 {
   font-size: 24px;
 }
-
-.icons {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.btn,
-.drop-down {
-  background: none;
-  border: none;
-  color: white;
-  font-size: 20px;
-  cursor: pointer;
-}
-
-.count {
-  background: red;
-  color: white;
-  font-size: 14px;
-  padding: 4px 8px;
-  border-radius: 50%;
-  font-weight: bold;
-}
-
 .cart {
   position: absolute;
   top: 150px;
@@ -168,20 +143,15 @@ body {
   margin-left: 15px;
 }
 
-/* Filters */
 .filters {
   display: flex;
-  justify-content: center;
-
-  align-items: center;
   gap: 10px;
-  margin-bottom: 20px;
 }
 
 .filters select,
 .filters button {
-  padding: 10px;
-  font-size: 16px;
+  padding: 8px;
+  font-size: 14px;
   border: none;
   border-radius: 5px;
   cursor: pointer;
@@ -193,13 +163,52 @@ body {
 }
 
 .filters button {
-  background-color: #333;
+  background-color: #555;
   color: white;
   transition: 0.3s;
 }
 
 .filters button:hover {
-  background-color: #555;
+  background-color: #777;
+}
+
+.search-bar {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.search-bar input {
+  width: 100%;
+  max-width: 400px;
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.icons {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.btn,
+.drop-down {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.count {
+  background: red;
+  color: white;
+  font-size: 14px;
+  padding: 4px 8px;
+  border-radius: 50%;
+  font-weight: bold;
 }
 
 .book-list {
@@ -253,43 +262,4 @@ body {
 
 .shop-now:hover {
   background: #e63946;
-}
-#searchInput {
-  padding: 8px;
-  width: 200px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  font-size: 14px;
-}
-
-.filters button {
-  background: #333;
-  color: white;
-  border: none;
-  padding: 8px 12px;
-  cursor: pointer;
-  border-radius: 5px;
-  font-size: 14px;
-}
-
-.filters button:hover {
-  background: #0056b3;
-}
-
-.error {
-  color: red;
-  text-align: center;
-  font-size: 16px;
-  margin-top: 10px;
-}
-
-@media (max-width: 768px) {
-  .nav-bar {
-    flex-direction: column;
-    text-align: center;
-  }
-
-  .filters {
-    flex-direction: column;
-  }
 }

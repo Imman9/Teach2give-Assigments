@@ -114,6 +114,8 @@ app.get("/users", async (req, res) => {
 app.post("/users", async (req, res) => {
   try {
     const { name, email, password } = req.body;
+    
+
     const newUser = await pool.query(
       "INSERT INTO users (name, email, password) VALUES ($1, $2, $3) RETURNING *",
       [name, email, password]
