@@ -14,23 +14,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const dotenv_1 = __importDefault(require("dotenv"));
-const fs_1 = require("fs");
-const path_1 = __importDefault(require("path"));
 const cors_1 = __importDefault(require("cors"));
 const db_1 = __importDefault(require("./db/db"));
 dotenv_1.default.config();
 const app = (0, express_1.default)();
 const port = process.env.PORT || 3000;
+app.use((0, cors_1.default)({ origin: "http://localhost:5173", credentials: true }));
+app.use(express_1.default.json()); // Parse JSON request bodies
 console.log(`Server running on port: ${port}`);
-app.use((0, cors_1.default)({
-    origin: "http://localhost:5173",
-    methods: "GET, PUT, DELETE",
-    credentials: true,
-}));
-const _dirname = path_1.default.resolve();
-const bookData = (0, fs_1.readFileSync)(path_1.default.join(_dirname, "src", "db", "booksData.json"), "utf-8");
-const books = JSON.parse(bookData);
-// get books with filtering and sorting
 app.get("/books", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         let query = "SELECT * FROM books";
@@ -64,6 +55,22 @@ app.get("/books", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         }
         const result = yield db_1.default.query(query, values);
         res.json(result.rows);
+    }
+    catch (err) {
+        if (err instanceof Error) {
+            res.status(500).json({ error: err.message });
+        }
+        else {
+            res.status(500).json({ error: "An unknown error occurred" });
+        }
+    }
+}));
+//posting a book
+app.post("/books", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { title, author, genre, year, pages, cost, image } = req.body;
+        const newBook = yield db_1.default.query("INSERT INTO books (title, author, genre, year, pages, cost, image) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *", [title, author, genre, year, pages, cost, image]);
+        res.json(newBook.rows[0]);
     }
     catch (err) {
         if (err instanceof Error) {
@@ -137,32 +144,6 @@ app.delete("/books/:id", (req, res) => __awaiter(void 0, void 0, void 0, functio
         }
     }
 }));
-// app.get("/books", (req, res) => {
-//   let filteredBooks = [...books];
-//   const { year, pages, genre, sort, title } = req.query;
-//   if (genre) {
-//     filteredBooks = filteredBooks.filter(
-//       (book) => book.genre.toLowerCase() === (genre as string).toLowerCase()
-//     );
-//   }
-//   if (year) {
-//     filteredBooks = filteredBooks.filter((book) => book.year === Number(year));
-//   }
-//   if (pages) {
-//     filteredBooks = filteredBooks.filter((book) => book.pages <= Number(pages));
-//   }
-//   if (title) {
-//     filteredBooks = filteredBooks.filter((book) =>
-//       book.title.toLowerCase().includes((title as string).toLowerCase())
-//     );
-//   }
-//   if (sort === "asc") {
-//     filteredBooks.sort((a, b) => a.year - b.year);
-//   } else if (sort === "desc") {
-//     filteredBooks.sort((a, b) => b.year - a.year);
-//   }
-//   res.json(filteredBooks);
-// });
 app.listen(port, () => {
     console.log(`Server is running on port: ${port}`);
 });

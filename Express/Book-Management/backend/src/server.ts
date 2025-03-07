@@ -62,6 +62,24 @@ app.get("/books", async (req, res) => {
     }
   }
 });
+//posting a book
+app.post("/books", async (req, res) => {
+  try {
+    const { title, author, genre, year, pages, cost, image } = req.body;
+    const newBook = await pool.query(
+      "INSERT INTO books (title, author, genre, year, pages, cost, image) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *",
+      [title, author, genre, year, pages, cost, image]
+    );
+    res.json(newBook.rows[0]);
+  } catch (err) {
+    if (err instanceof Error) {
+      res.status(500).json({ error: err.message });
+    } else {
+      res.status(500).json({ error: "An unknown error occurred" });
+    }
+  }
+});
+
 //posting a new book linked to user
 app.post("/users", async (req, res) => {
   try {

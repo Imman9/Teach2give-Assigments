@@ -19,7 +19,7 @@ function fetchData() {
             const queryString = new URLSearchParams(params).toString();
             const res = yield fetch(`${api}?${queryString}`);
             const data = yield res.json();
-            return data;
+            return data.map((book) => (Object.assign(Object.assign({}, book), { cost: Number(book.cost) })));
         }
         catch (err) {
             console.error("Error fetching data: ", err);
@@ -97,6 +97,7 @@ function addToCart(book) {
     else {
         cart.push(Object.assign(Object.assign({}, book), { quantity: 1 }));
     }
+    console.log("Cart Updated:", cart);
     updateCart();
 }
 function removeFromCart(title) {
