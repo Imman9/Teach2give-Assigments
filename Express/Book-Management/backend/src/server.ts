@@ -1,7 +1,6 @@
-import express, { Request, Response } from "express";
+import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
-
 import bookRoutes from "./routes/book";
 import userRoutes from "./routes/users";
 import borrowRoutes from "./routes/borrow";
@@ -13,8 +12,7 @@ const app = express();
 const port = process.env.PORT || 3000;
 
 app.use(cors({ origin: "http://localhost:5173", credentials: true }));
-app.use(express.json()); // Parse JSON request bodies
-
+app.use(express.json());
 console.log(`Server running on port: ${port}`);
 
 //routes
