@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Books Library</title>
+    <link rel="stylesheet" href="styles.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+      integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+  </head>
+  <body>
+    <div class="container" id="container">
+      <nav class="nav-bar">
+        <h1>Books Library</h1>
+        <div class="filters">
+          <select id="genreFilter">
+            <option value="">Select Genre</option>
+            <option value="Dystopian">Dystopian</option>
+            <option value="Fiction">Fiction</option>
+            <option value="Fantasy">Fantasy</option>
+            <option value="Epic Poetry">Epic Poetry</option>
+            <option value="Historical Fiction">Historical Fiction</option>
+            <option value="Adventure">Adventure</option>
+            <option value="Romance">Romance</option>
+          </select>
+          <button id="sortAsc">Sort by Year (Asc)</button>
+          <button id="sortDesc">Sort by Year (Desc)</button>
+        </div>
+        <div class="icons">
+          <button class="btn" id="authBtn">
+            <i class="fa fa-user" aria-hidden="true"></i>
+            <span>Login/Signup</span>
+          </button>
+          <button class="btn" id="logoutBtn">
+            <i class="fa fa-sign-out" aria-hidden="true"></i>
+            <span>Logout</span>
+          </button>
+          <button class="btn">
+            <i class="fa fa-cart-plus" aria-hidden="true"></i>
+            <span class="count" id="count">0</span>
+          </button>
+          <button class="drop-down" id="toggleCartBtn">
+            <i class="fa fa-sort-desc" aria-hidden="true"></i>
+          </button>
+        </div>
+      </nav>
+
+      <div class="cart hidden" id="cart">
+        <h3>Cart</h3>
+        <div class="cart-items"></div>
+      </div>
+
+      <div class="search-bar">
+        <input
+          type="text"
+          id="searchInput"
+          placeholder="Search book by name..."
+        />
+      </div>
+
+      <!-- Role-Specific Features -->
+      <!-- admin feature -->
+      <div id="adminFeatures" class="role-section" style="display: none">
+        <button id="createBookBtn">Create Book</button>
+        <button id="deleteUserBtn">Delete User</button>
+        <button id="viewBorrowingRecordsBtn">View Borrowing Records</button>
+
+        <button id="generateReportsBtn">Generate Reports</button>
+      </div>
+      <div id="borrowingRecordsModal" class="modal" style="display: none">
+        <div class="modal-content">
+          <span id="closeRecordsModal" class="close-btn">&times;</span>
+          <div id="borrowingRecords"></div>
+        </div>
+      </div>
+      <!-- librarian feature -->
+      <div id="librarianFeatures" class="role-section" style="display: none">
+        <button id="approveBorrowBtn">Approve Borrow Requests</button>
+        <button id="processReturnsBtn">Process Returns</button>
+        <button id="manageBookCopiesBtn">Manage Book Copies</button>
+        <button id="viewBorrowersListBtn">View Borrowers List</button>
+      </div>
+      <div id="approveBorrowRequests" class="modal" style="display: none">
+        <div class="modal-content">
+          <span id="closeApproveBorrowModal" class="close-btn">&times;</span>
+          <div id="approveBorrowRequests"></div>
+        </div>
+      </div>
+
+      <!--  Process Returns Modal -->
+      <div id="processReturnsModal" class="modal" style="display: none">
+        <div class="modal-content">
+          <span id="closeProcessReturnsModal" class="close-btn">&times;</span>
+          <div id="processReturns"></div>
+        </div>
+      </div>
+
+      <!--  View Borrowers List Modal -->
+      <div id="borrowersListModal" class="modal" style="display: none">
+        <div class="modal-content">
+          <span id="closeBorrowersListModal" class="close-btn">&times;</span>
+          <div id="borrowersList"></div>
+        </div>
+      </div>
+      <!-- borrower features -->
+      <div id="borrowerFeatures" class="role-section" style="display: none">
+        <button id="borrowBookBtn">Borrow Book</button>
+        <button id="viewBorrowedBooksBtn">View Borrowed Books</button>
+        <button id="returnBookBtn">Return Book</button>
+      </div>
+      <div id="borrowedBooksModal" class="modal" style="display: none">
+        <div class="modal-content">
+          <span id="closeBorrowedBooksModal" class="close-btn">&times;</span>
+          <div id="borrowedBooks"></div>
+        </div>
+      </div>
+
+      <!-- Common Features (Visible to All Roles)  -->
+      <div id="commonFeatures">
+        <h2>Welcome to the Library</h2>
+        <p>Explore our collection of books!</p>
+      </div>
+
+      <!-- Create Book Form (Hidden by Default) -->
+      <div id="createBookForm" class="form-container" style="display: none">
+        <h2>Create New Book</h2>
+        <button id="closeCreateForm" class="close-btn">×</button>
+        <form id="createBookForm">
+          <input type="hidden" id="bookId" name="bookId" />
+          <input type="text" id="title" placeholder="Title" required />
+          <input type="text" id="author" placeholder="Author" required />
+          <input type="text" id="genre" placeholder="Genre" required />
+          <input type="number" id="year" placeholder="Year" required />
+          <input type="number" id="pages" placeholder="Pages" required />
+          <input type="text" id="publisher" placeholder="Publisher" required />
+          <textarea
+            id="description"
+            placeholder="Description"
+            required
+          ></textarea>
+          <input type="text" id="image" placeholder="Image URL" required />
+          <input type="number" id="cost" placeholder="Cost" required />
+          <input
+            type="number"
+            id="total_copies"
+            placeholder="total_copies"
+            required
+          />
+
+          <button id="submitBtn" step="0.01" min="0" type="submit">
+            Create Book
+          </button>
+        </form>
+      </div>
+
+      <!-- Borrow Book Form (Hidden by Default) -->
+      <div id="borrowBookForm" class="form-container" style="display: none">
+        <h2>Borrow Book</h2>
+        <button id="closeBorrowForm" class="close-btn">×</button>
+        <form id="borrowBookFormElement">
+          <input type="text" id="copy_id" placeholder="Book Copy ID" required />
+          <input
+            type="text"
+            id="librarian_id"
+            placeholder="Librarian ID"
+            required
+          />
+          <input type="date" id="return_date" required />
+
+          <button type="submit">Borrow Book</button>
+        </form>
+        <p id="borrowMessage" class="message"></p>
+      </div>
+
+      <div id="booksContainer" class="book-list"></div>
+      <p id="errorMsg" class="error" style="display: none">No books found.</p>
+    </div>
+    <script type="module" src="./src/index.ts"></script>
+  </body>
+</html>

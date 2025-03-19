@@ -1,11 +1,11 @@
 const api1: string = "http://localhost:3000";
 
-// 🟢 Save Token to Local Storage
+// Save Token to Local Storage
 function saveToken(token: string): void {
   localStorage.setItem("token", token);
 }
 
-// 🟢 Handle Login
+//  Handle Login
 document.getElementById("login")?.addEventListener("submit", async (e) => {
   e.preventDefault();
   const email = (document.getElementById("loginEmail") as HTMLInputElement)
@@ -24,10 +24,12 @@ document.getElementById("login")?.addEventListener("submit", async (e) => {
     });
 
     const data = await response.json();
+
     if (response.ok) {
       localStorage.setItem("token", data.token); // Save the token
+      localStorage.setItem("userId", data.user.user_id); //save user_id
       localStorage.setItem("role", data.user.role_id); // Save the role
-      window.location.href = "index.html"; // Redirect to home page
+      window.location.href = "home.html"; // Redirect to home page
     } else {
       alert(data.error || "Login failed");
     }
@@ -37,7 +39,7 @@ document.getElementById("login")?.addEventListener("submit", async (e) => {
   }
 });
 
-// 🟢 Handle Signup
+//  Handle Signup
 document.getElementById("signup")?.addEventListener("submit", async (e) => {
   e.preventDefault();
   const name = (document.getElementById("signupName") as HTMLInputElement)
@@ -70,7 +72,7 @@ document.getElementById("signup")?.addEventListener("submit", async (e) => {
   }
 });
 
-// 🟢 Toggle Between Login and Signup Forms
+//  Toggle Between Login and Signup Forms
 document.getElementById("showSignup")?.addEventListener("click", (e) => {
   e.preventDefault();
   (document.getElementById("loginForm") as HTMLDivElement).style.display =
